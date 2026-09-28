@@ -1,0 +1,15 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Quiz — question loads with 4 choices and feedback shown after answer",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/quiz/kinematics" },
+    { "type": "assertion", "description": "A 'Quiz' badge is visible in the header" },
+    { "type": "assertion", "description": "Progress text 'ข้อ 1 / 10' is visible" },
+    { "type": "assertion", "description": "Exactly 4 choice buttons labeled A, B, C, D are visible" },
+    { "type": "action", "description": "Click the first choice button (choice A, id='choice-0')" },
+    { "type": "assertion", "description": "One choice button turns green (correct answer highlighted) and another turns red if the answer is wrong, OR the clicked button turns green if correct" },
+    { "type": "assertion", "description": "An explanation text appears below the choices after selecting an answer" },
+    { "type": "assertion", "description": "A 'ข้อถัดไป' next button is visible after selecting an answer" }
+  ]
+}

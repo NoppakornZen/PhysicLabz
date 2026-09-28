@@ -1,0 +1,15 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Learn — content loads and solution reveal works",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/learn/kinematics" },
+    { "type": "assertion", "description": "A 'Learn' badge is visible in the header" },
+    { "type": "assertion", "description": "A 'กลับ' back button is visible" },
+    { "type": "assertion", "description": "A section labeled 'แนวคิดหลัก' or similar concept section is present" },
+    { "type": "assertion", "description": "A formula display section labeled 'สูตรสำคัญ' is visible with a monospace formula" },
+    { "type": "action", "description": "Click the button with text '▶ ดูวิธีทำ' to reveal the worked solution" },
+    { "type": "assertion", "description": "Solution steps appear with numbered steps or 'คำตอบ:' text visible" },
+    { "type": "assertion", "description": "A done button with text 'เรียนจบแล้ว' is visible on the page" }
+  ]
+}

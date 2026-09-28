@@ -1,0 +1,16 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Login — form elements present and error shown on bad credentials",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/login" },
+    { "type": "assertion", "description": "Two tabs are visible: one with text 'เข้าสู่ระบบ' and one with text 'สมัครสมาชิก'" },
+    { "type": "assertion", "description": "An email input field is visible on the page" },
+    { "type": "assertion", "description": "A password input field is visible on the page" },
+    { "type": "assertion", "description": "A button with text 'เข้าสู่ระบบ' (submit button, not the tab) is visible" },
+    { "type": "action", "description": "Type 'wrong@test.com' into the email input" },
+    { "type": "action", "description": "Type 'wrongpassword' into the password input" },
+    { "type": "action", "description": "Click the submit button with text 'เข้าสู่ระบบ'" },
+    { "type": "assertion", "description": "An error message element with role='alert' appears containing Thai text about incorrect email or password" }
+  ]
+}

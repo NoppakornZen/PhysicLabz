@@ -1,0 +1,12 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Learn — done button redirects back to lobby",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/learn/kinematics" },
+    { "type": "assertion", "description": "A done button with id 'learnDoneBtn' or text 'เรียนจบแล้ว' is visible" },
+    { "type": "action", "description": "Click the button with text 'เรียนจบแล้ว' or id 'learnDoneBtn'" },
+    { "type": "assertion", "description": "The button text changes to 'กำลังกลับ...' immediately after clicking" },
+    { "type": "assertion", "description": "The page URL changes to '/lobby' within 2 seconds" }
+  ]
+}

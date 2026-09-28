@@ -1,0 +1,380 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  /* Nature Island Palette */
+  --ocean-deep: #0d4f6b;
+  --ocean-mid: #1a7fa0;
+  --ocean-light: #4fb3d4;
+  --ocean-foam: #a8e6f0;
+
+  --sky-dawn: #fce4be;
+  --sky-day: #87ceeb;
+  --sky-light: #d4f1fb;
+
+  --island-dark: #2d6a2d;
+  --island-mid: #4caf50;
+  --island-light: #81c784;
+  --island-pale: #c8e6c9;
+
+  --sand-dark: #c8a96e;
+  --sand-mid: #e8c97a;
+  --sand-light: #f5e4a8;
+  --sand-pale: #fdf6e3;
+
+  --bark-dark: #5d4037;
+  --bark-mid: #795548;
+  --bark-light: #a1887f;
+
+  --nuto-cream: #fef9f0;
+  --nuto-brown: #c8956c;
+  --nuto-teal: #26a69a;
+  --nuto-glasses: #00acc1;
+
+  /* UI Colors */
+  --white: #ffffff;
+  --text-dark: #1a2e1a;
+  --text-mid: #3d5c3d;
+  --text-muted: #7a9a7a;
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-border: rgba(76, 175, 80, 0.25);
+
+  /* Lab Colors */
+  --lab-bg: #1a2a3a;
+  --lab-grid: rgba(79, 179, 212, 0.12);
+  --lab-accent: #00e5ff;
+  --lab-success: #69f0ae;
+  --lab-warning: #ffd740;
+
+  /* Typography */
+  --font-main: 'Nunito', sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 4px 24px rgba(13, 79, 107, 0.12);
+  --shadow-card: 0 8px 32px rgba(13, 79, 107, 0.16);
+  --shadow-island: 0 16px 48px rgba(13, 79, 107, 0.28);
+  --shadow-glow-green: 0 0 20px rgba(76, 175, 80, 0.45);
+  --shadow-glow-teal: 0 0 20px rgba(0, 229, 255, 0.45);
+
+  /* Transitions */
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  background: var(--sky-day);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== KEYFRAME ANIMATIONS ===== */
+
+/* Float */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+}
+
+/* Entrance */
+@keyframes enter-up {
+  0%   { transform: translateY(40px) scale(0.88); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Wave */
+@keyframes wave-ocean {
+  0%, 100% { transform: translateX(0) scaleY(1); }
+  50% { transform: translateX(-20px) scaleY(1.06); }
+}
+
+/* Idle mascot sway */
+@keyframes mascot-idle {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+
+/* Celebrate */
+@keyframes mascot-celebrate {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  20% { transform: scale(1.15) rotate(-8deg); }
+  40% { transform: scale(1.15) rotate(8deg); }
+  60% { transform: scale(1.1) rotate(-5deg); }
+  80% { transform: scale(1.1) rotate(5deg); }
+}
+
+/* Sad droop */
+@keyframes mascot-sad {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(4px) rotate(-3deg); }
+}
+
+/* Flag wave */
+@keyframes flag-wave {
+  0%, 100% { transform: rotate(-5deg) scaleX(1); }
+  50% { transform: rotate(5deg) scaleX(0.92); }
+}
+
+/* Island hover glow */
+@keyframes island-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(76, 175, 80, 0.35); }
+  50% { box-shadow: 0 0 28px rgba(76, 175, 80, 0.7); }
+}
+
+/* Lock shimmer */
+@keyframes lock-shake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-5deg); }
+  40% { transform: rotate(5deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(3deg); }
+}
+
+/* Typewriter cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Slide in from bottom */
+@keyframes slide-in-bottom {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Sparkle */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+/* Star burst */
+@keyframes star-burst {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(2.5) rotate(45deg); opacity: 0; }
+}
+
+/* Progress fill */
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: var(--target-width); }
+}
+
+/* Ocean clouds drift */
+@keyframes cloud-drift {
+  0% { transform: translateX(-120px); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translateX(calc(100vw + 120px)); opacity: 0; }
+}
+
+/* Score counter */
+@keyframes count-up {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+.animate-enter-up { animation: enter-up 0.6s var(--ease-out-quart) forwards; }
+.animate-fade-in { animation: fade-in 0.5s var(--ease-out) forwards; }
+.animate-slide-right { animation: slide-in-right 0.4s var(--ease-out) forwards; }
+.animate-slide-bottom { animation: slide-in-bottom 0.4s var(--ease-out) forwards; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--island-pale); }
+::-webkit-scrollbar-thumb { background: var(--island-mid); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--island-dark); }
+
+/* ===== BUTTON BASE ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.22s var(--ease-bounce);
+  text-decoration: none;
+}
+
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #3dca6a, #178aae);
+  color: var(--white);
+  box-shadow: 0 4px 18px rgba(61, 202, 106, 0.42);
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(61, 202, 106, 0.6);
+}
+
+.btn-secondary {
+  background: var(--card-bg);
+  color: var(--island-dark);
+  border: 2px solid var(--card-border);
+  box-shadow: var(--shadow-soft);
+}
+.btn-secondary:hover {
+  background: var(--island-pale);
+  transform: translateY(-1px);
+}
+
+.btn-ocean {
+  background: linear-gradient(135deg, var(--ocean-deep), var(--ocean-mid));
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(26, 127, 160, 0.4);
+}
+.btn-ocean:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(26, 127, 160, 0.55);
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ===== FORMULA CHIP ===== */
+.formula-chip {
+  display: inline-block;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, var(--ocean-deep), #1a4a6b);
+  color: var(--ocean-foam);
+  border-radius: var(--radius-md);
+  font-family: 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 12px rgba(13, 79, 107, 0.3);
+}
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.badge-success { background: var(--island-pale); color: var(--island-dark); }
+.badge-locked { background: #e0e0e0; color: #757575; }
+.badge-progress { background: var(--sky-light); color: var(--ocean-deep); }
+
+/* ===== SHARED KEYFRAMES ===== */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  18% { transform: translateX(-9px); }
+  36% { transform: translateX(9px); }
+  54% { transform: translateX(-6px); }
+  72% { transform: translateX(6px); }
+  88% { transform: translateX(-3px); }
+}
+
+@keyframes correct-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes spring-up {
+  0% { transform: translateY(22px); opacity: 0; }
+  65% { transform: translateY(-5px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.97) !important;
+  transition-duration: 0.07s !important;
+}
+
+/* ===== RESPONSIVE UTILITIES ===== */
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+
+  .btn {
+    padding: 11px 22px;
+    font-size: 0.92rem;
+  }
+
+  .formula-chip {
+    font-size: 0.88rem;
+    padding: 6px 14px;
+  }
+}
+
+/* Touch target minimum size */
+@media (pointer: coarse) {
+  .btn, button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent text size adjust on rotation */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}

@@ -1,0 +1,14 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Lab — simulation starts and telemetry updates",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/lab/kinematics" },
+    { "type": "assertion", "description": "A 'LAB' badge is visible in the header" },
+    { "type": "assertion", "description": "A 'กลับ' back button is visible" },
+    { "type": "assertion", "description": "A start button with text 'เริ่มทดลอง' is visible" },
+    { "type": "assertion", "description": "A telemetry panel showing 'เวลา' (time) label is visible" },
+    { "type": "action", "description": "Click the 'เริ่มทดลอง' button to start the simulation" },
+    { "type": "assertion", "description": "The status indicator changes to show 'กำลังรัน' (running) or the button text changes to 'หยุดชั่วคราว'" }
+  ]
+}

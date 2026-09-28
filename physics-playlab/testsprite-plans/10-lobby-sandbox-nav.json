@@ -1,0 +1,12 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Lobby — Lab Sandbox button navigates to /lab-sandbox",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/lobby" },
+    { "type": "assertion", "description": "A 'Lab Sandbox' section is visible with a 'เริ่มทดลอง' button" },
+    { "type": "action", "description": "Click the 'เริ่มทดลอง' button in the Lab Sandbox card" },
+    { "type": "assertion", "description": "The page URL changes to '/lab-sandbox'" },
+    { "type": "assertion", "description": "A 'Lab Sandbox' heading or 'LIVE AR' badge is visible on the new page" }
+  ]
+}

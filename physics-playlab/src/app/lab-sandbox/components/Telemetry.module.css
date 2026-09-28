@@ -1,0 +1,61 @@
+.root {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.telemetry {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 11px;
+  background: rgba(6, 12, 22, 0.86);
+  border: 1px solid color-mix(in srgb, var(--obj-color, #00e5ff) 65%, transparent);
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.28),
+    0 0 16px color-mix(in srgb, var(--obj-color, #00e5ff) 18%, transparent);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grabbed {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    0 0 22px rgba(0, 229, 255, 0.35);
+}
+
+.objName {
+  font-size: 0.65rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  color: var(--obj-color, #00e5ff);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.key {
+  width: 12px;
+  color: rgba(232, 244, 255, 0.45);
+  font-style: italic;
+  font-weight: 700;
+}
+
+.val {
+  color: #e8f4ff;
+  font-weight: 700;
+}

@@ -1,0 +1,26 @@
+# Local secrets
+**/.env*
+!**/.env.example
+
+# Dependencies and generated output
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+**/coverage/
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# Local deployment and test tooling
+**/.vercel/
+**/.testsprite/
+**/.claude/
+**/.impeccable/
+/.agents/
+/.codex/
+/.cursor/
+/.gemini/
+/.venv/
+
+# Logs
+*.log

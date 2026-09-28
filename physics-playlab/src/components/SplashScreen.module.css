@@ -1,0 +1,56 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(155deg, #061624 0%, #092238 18%, #0b3350 40%, #093d46 65%, #063018 100%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.fade { opacity: 0; pointer-events: none; }
+
+.canvas {
+  width: 380px;
+  height: 380px;
+  max-width: 78vw;
+  max-height: 78vw;
+  filter: drop-shadow(0 0 40px rgba(20, 200, 160, 0.3));
+}
+
+.title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #6ee8c0, #60c8f0, #6ee8c0);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2.5s linear infinite;
+  margin: 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.sub {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(160, 230, 210, 0.55);
+  letter-spacing: 0.06em;
+  margin: 0;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}

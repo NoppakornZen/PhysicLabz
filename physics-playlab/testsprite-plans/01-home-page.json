@@ -1,0 +1,13 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Home — landing page loads with correct content",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/" },
+    { "type": "assertion", "description": "The heading contains the text 'Physics PlayLab' in the navigation bar" },
+    { "type": "assertion", "description": "The hero section h1 contains the Thai word 'ฟิสิกส์'" },
+    { "type": "assertion", "description": "A button or link with text 'สมัครสมาชิกฟรี' or 'สมัครฟรี' is visible on the page" },
+    { "type": "assertion", "description": "Three mode panels labeled '01', '02', '03' are visible on the page" },
+    { "type": "assertion", "description": "The footer text '© 2026 Physics PlayLab' is visible" }
+  ]
+}

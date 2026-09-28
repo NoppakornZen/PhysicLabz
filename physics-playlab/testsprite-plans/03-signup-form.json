@@ -1,0 +1,13 @@
+{
+  "projectId": "ec75bec1-4f24-4c1f-9f62-62da97cd6912",
+  "type": "frontend",
+  "name": "Login — signup tab reveals name field",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://physics-playlab.vercel.app/login" },
+    { "type": "action", "description": "Click the tab with text 'สมัครสมาชิก'" },
+    { "type": "assertion", "description": "A text input with placeholder containing 'ชื่อ' (name field) is now visible" },
+    { "type": "assertion", "description": "An email input field is visible" },
+    { "type": "assertion", "description": "A password input field is visible" },
+    { "type": "assertion", "description": "A submit button with text 'สมัครแล้วเริ่มเลย' is visible" }
+  ]
+}

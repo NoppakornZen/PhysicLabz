@@ -1,0 +1,157 @@
+================================================================
+PHYSICS PLAYLAB — ภาพรวมระบบทั้งเว็บ
+================================================================
+สร้างเมื่อ: 2026-07-19
+Tech Stack: Next.js (React) + TypeScript + Firebase/Firestore
+================================================================
+
+[ เว็บนี้คืออะไร ]
+
+Physics PlayLab คือแพลตฟอร์มเรียนฟิสิกส์แบบ Interactive สำหรับนักเรียน
+แนวคิดหลักคือ "เรียนโดยการเห็นฟิสิกส์เกิดขึ้นจริง ไม่ใช่แค่ท่องสูตร"
+รูปแบบเป็น Game-based Learning ผ่านแผนที่ Island style
+ผู้เรียนไล่ผ่านเนื้อหาทีละ Island โดยต้องเรียน → ทดลอง → สอบ ตามลำดับ
+
+----------------------------------------------------------------
+[ จุดเด่นที่ชูขาย ]
+
+1. Physics Simulation จริงจากสูตรจริง — ไม่ใช่ animation ธรรมดา
+2. Hand Tracking ใช้มือควบคุม object ในแล็บได้โดยตรง
+3. Mascot ที่ทำหน้าที่สอน ให้ hint และ react กับผู้เรียน
+4. ระบบ Island + Flag แสดง progress แบบ game world ที่มองเห็นได้ชัด
+
+----------------------------------------------------------------
+[ SYSTEM 1 — Authentication & User Session ]
+
+- ใช้ Firebase Authentication
+- หน้า Login (/login) สำหรับเข้าระบบ
+- เก็บข้อมูล Progress ของผู้ใช้ใน Firestore
+- มีหน้า Admin (/admin) สำหรับจัดการระบบ
+
+----------------------------------------------------------------
+[ SYSTEM 2 — Isometric Lobby Map ]
+
+Route: /lobby
+
+- แผนที่ Island สไตล์ Isometric game
+- แสดง Main Island 2 กลุ่ม:
+    1. การเคลื่อนที่แนวตรง (Straight Motion) — สีเขียว
+    2. แรงและกฎของแรง (Forces & Newton Laws) — สีน้ำเงิน
+- แต่ละ Main Island มี Sub-Island 3 เกาะ
+- Sub-Island แต่ละเกาะมี 4 สถานะ: Locked / Available / In Progress / Completed (ปักธง)
+- การ Unlock ต้องทำตามลำดับ (เช่น ต้องผ่าน Horizontal ก่อนถึงจะปลดล็อค Vertical)
+- มี Ocean Wave animation + Particle effects ตกแต่ง
+
+Sub-Islands ทั้งหมดในปัจจุบัน:
+  Straight Motion:
+    - Horizontal Motion (การเคลื่อนที่แนวราบ)
+    - Vertical Motion (การเคลื่อนที่แนวดิ่ง)
+    - Projectile Motion (การเคลื่อนที่แบบโปรเจคไทล์)
+  Newton Laws:
+    - Newton's First Law
+    - Newton's Second Law
+    - Newton's Third Law
+
+----------------------------------------------------------------
+[ SYSTEM 3 — Learn Mode ]
+
+Route: /learn/[islandId]
+
+- หน้าเรียนเนื้อหาของแต่ละ Island
+- ประกอบด้วย:
+    - คำอธิบายแนวคิดหลัก
+    - สูตรสำคัญ 1–3 สูตร
+    - ตัวอย่างโจทย์
+    - Mascot panel อธิบายประกอบ
+- เป็น prerequisite ก่อนเข้าใช้ Lab หรือ Quiz
+
+----------------------------------------------------------------
+[ SYSTEM 4 — Lab Mode (Guided) ]
+
+Route: /lab/[islandId]
+
+- ห้องทดลองฟิสิกส์แบบ Guided ตรงกับเนื้อหาของแต่ละ Island
+- มี Physics Engine จริง (deterministic, formula-based, fixed timestep 60fps)
+- สูตรที่ Engine ใช้:
+    v = u + at
+    s = ut + ½at²
+    v² = u² + 2as
+    F = ma
+    Projectile: x = v₀cosθ·t, y = v₀sinθ·t - ½gt²
+- Object ที่เลือกได้: car, ball, block, projectile
+- Parameter sliders ปรับค่า: mass, force, velocity, time, angle
+- ปุ่ม Play / Reset / Step
+- แสดง DataChart กราฟ velocity/position real-time
+
+----------------------------------------------------------------
+[ SYSTEM 5 — Lab Sandbox (Free Play + Hand Tracking) ]
+
+Route: /lab-sandbox
+
+- โหมดแล็บอิสระ ไม่ผูกกับ Island ใดๆ
+- จุดเด่นหลัก: ใช้ Hand Tracking ผ่าน MediaPipe
+    - Pinch (หัวแม่มือ + นิ้วชี้) = จับ object
+    - Middle finger openness = ควบคุม mass ของ object
+    - ระบบมี hysteresis กัน flicker ขณะ pinch
+- Physics World แยก (Rapier.js / handPhysics engine) รองรับ:
+    - gravity ปรับได้
+    - collision detection
+    - object หลายชิ้นพร้อมกัน
+- Panel ต่างๆ ในหน้า:
+    - Scene 3D — พื้นที่วาง object + hand skeleton overlay
+    - ObjectBox — เลือก spawn object
+    - SettingsPanel — ตั้ง gravity + ค่าต่างๆ
+    - Telemetry — แสดง velocity, height, force real-time
+    - EnergyGraph — กราฟ kinetic/potential energy live
+    - MissionPanel — ภารกิจเสริม (sandbox missions)
+- ระบบเช็ค device capability ก่อนเปิด camera
+
+----------------------------------------------------------------
+[ SYSTEM 6 — Quiz System ]
+
+Route: /quiz/[islandId]
+
+- แบบทดสอบหลังเรียนแต่ละ Island
+- 10 ข้อต่อ Sub-Island
+- รูปแบบ: MCQ + คำนวณ
+- เกณฑ์คะแนน:
+    0–4  = Fail
+    5–7  = Pass
+    8–10 = Perfect → ปลดล็อค Flag ปักธงบน Island
+- หลังตอบแต่ละข้อ Mascot จะอธิบายคำตอบและแสดง formula reference
+
+----------------------------------------------------------------
+[ SYSTEM 7 — Mascot System ]
+
+- ตัวละคร Mascot ปรากฏทุกโหมด (Learn / Lab / Quiz)
+- Assets: ภาพ 5 ท่า (Front, Left, Right, Read, Think)
+- สถานะ: Idle / Teaching / Explaining / Hinting / Celebration / Failure
+- มี SpeechBubble component แสดงข้อความ
+- มี WelcomeAnimation เปิดตัวครั้งแรก
+- Mascot ไม่ใช่แค่ decoration — เป็น guide หลักของระบบ
+
+----------------------------------------------------------------
+[ SYSTEM 8 — Progress & Flag System ]
+
+- เก็บ progress ใน Firestore รายผู้ใช้
+- Track: completed sub-islands, quiz scores, flag status
+- Flag = สัญลักษณ์แสดงว่าผ่าน Island นั้นสมบูรณ์แล้ว
+- เห็นบน Lobby Map ในรูป flag ปักอยู่บนเกาะ
+- ระบบ unlock chain บังคับไล่ตามลำดับ
+
+----------------------------------------------------------------
+[ SYSTEM 9 — Audio System ]
+
+- Background Music แยก module (bgMusic.ts) — toggle ได้
+- Sound Effects (sounds.ts) สำหรับ feedback ต่างๆ
+- ปุ่ม MusicToggle บน UI
+
+================================================================
+Flow สรุปแบบ Step:
+
+Login → Lobby (เลือก Island) → Learn (เรียนเนื้อหา)
+     → Lab (ทดลองสูตรจริง) → Quiz (สอบ 10 ข้อ)
+     → Flag ปักธง + ปลดล็อค Island ถัดไป
+     (Lab Sandbox เปิดให้เล่นอิสระได้ตลอด)
+
+================================================================
