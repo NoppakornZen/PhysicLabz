@@ -2,16 +2,21 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Mascot from '@/components/mascot/Mascot'
-import { getLearnContent, LearnContent } from '@/data/learnContent'
-import { getSubIsland } from '@/data/islands'
+import { getLearnContent, LearnContent, getLocalizedLearnContent } from '@/data/learnContent'
+import { getSubIsland, getIslandName } from '@/data/islands'
 import { updateIslandProgress, getProgress } from '@/lib/progress'
 import { playClick, playComplete } from '@/lib/sounds'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { QUIZ } from '@/data/translations/quiz'
+import LanguageToggle from '@/components/LanguageToggle'
 import styles from './page.module.css'
 
 export default function LearnPage() {
   const router = useRouter()
   const params = useParams()
   const islandId = params.islandId as string
+  const lang = useLanguage()
 
   const [content, setContent] = useState<LearnContent | null>(null)
   const [activeFormula, setActiveFormula] = useState(0)
@@ -68,12 +73,14 @@ export default function LearnPage() {
   const nextMascotLine = useCallback(() => {
     if (!content) return
     playClick()
-    setMascotLine(p => (p + 1) % content.mascotLines.length)
-  }, [content])
+    const localizedContent = getLocalizedLearnContent(content, lang)
+    setMascotLine(p => (p + 1) % localizedContent.mascotLines.length)
+  }, [content, lang])
 
   if (!content) return null
 
   const island = getSubIsland(islandId)
+  const localizedContent = getLocalizedLearnContent(content, lang)
   const heroFormula = content.formulas[0]?.expression ?? ''
 
   return (
@@ -91,17 +98,18 @@ export default function LearnPage() {
         <button
           className={styles.backBtn}
           onClick={() => router.push('/lobby')}
-          aria-label="กลับ"
+          aria-label={lang === 'th' ? 'กลับ' : 'Back'}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M15 18 L9 12 L15 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          กลับ
+          {lang === 'th' ? 'กลับ' : 'Back'}
         </button>
         <div className={styles.headerTitle}>
           <span className={styles.modeBadge}>Learn</span>
-          <h1 className={styles.title}>{content.title}</h1>
+          <h1 className={styles.title}>{localizedContent.title}</h1>
         </div>
+        <LanguageToggle />
       </header>
 
       {/* Hero zone */}
@@ -111,9 +119,9 @@ export default function LearnPage() {
         <div className={styles.heroCornerBL} />
         <div className={styles.heroCornerBR} />
         <div className={styles.heroContent}>
-          <p className={styles.heroChapter}>{island?.name ?? islandId}</p>
+          <p className={styles.heroChapter}>{island ? getIslandName(island, lang) : islandId}</p>
           <div className={styles.heroFormula}>{heroFormula}</div>
-          <p className={styles.heroTitle}>{content.title}</p>
+          <p className={styles.heroTitle}>{localizedContent.title}</p>
         </div>
       </div>
 
@@ -123,9 +131,11 @@ export default function LearnPage() {
 
           {/* ── Concept section ── */}
           <section aria-labelledby="conceptHeading" className={styles.conceptSection}>
-            <p id="conceptHeading" className={styles.sectionLabel}>แนวคิดหลัก</p>
+            <p id="conceptHeading" className={styles.sectionLabel}>
+              {lang === 'th' ? 'แนวคิดหลัก' : 'Core Concepts'}
+            </p>
             <div className={styles.conceptItems} ref={conceptRef}>
-              {content.concept.map((text, i) => (
+              {localizedContent.concept.map((text, i) => (
                 <div
                   key={i}
                   className={styles.conceptItem}
@@ -144,7 +154,9 @@ export default function LearnPage() {
 
           {/* ── Formula section — CRT terminal ── */}
           <section aria-labelledby="formulaHeading" className={styles.formulaSection}>
-            <p id="formulaHeading" className={styles.sectionLabel}>สูตรสำคัญ</p>
+            <p id="formulaHeading" className={styles.sectionLabel}>
+              {lang === 'th' ? 'สูตรสำคัญ' : 'Key Formulas'}
+            </p>
             <div className={styles.crtScreen}>
               <div className={styles.crtHeader}>
                 <div className={styles.crtDot} aria-hidden="true" />
@@ -169,18 +181,18 @@ export default function LearnPage() {
                 )}
 
                 {/* Active formula card */}
-                {content.formulas[activeFormula] && (
+                {localizedContent.formulas[activeFormula] && (
                   <div
                     key={activeFormula}
                     className={styles.formulaCard}
                     role="tabpanel"
                   >
                     <div className={styles.formulaDisplay}>
-                      {content.formulas[activeFormula].expression}
+                      {localizedContent.formulas[activeFormula].expression}
                     </div>
-                    {content.formulas[activeFormula].variables.length > 0 && (
+                    {localizedContent.formulas[activeFormula].variables.length > 0 && (
                       <div className={styles.formulaLegend}>
-                        {content.formulas[activeFormula].variables.map((v, i) => (
+                        {localizedContent.formulas[activeFormula].variables.map((v, i) => (
                           <div key={i} className={styles.legendChip}>
                             <span className={styles.legendSym}>{v.symbol}</span>
                             <span className={styles.legendDef}>{v.meaning}</span>
@@ -198,19 +210,21 @@ export default function LearnPage() {
 
           {/* ── Example section — mission briefing ── */}
           <section aria-labelledby="exampleHeading" className={styles.exampleSection}>
-            <p id="exampleHeading" className={styles.sectionLabel}>ตัวอย่างโจทย์</p>
+            <p id="exampleHeading" className={styles.sectionLabel}>
+              {lang === 'th' ? 'ตัวอย่างโจทย์' : 'Worked Example'}
+            </p>
             <div className={styles.missionCard}>
               <div className={styles.missionHeader}>
                 <span className={styles.missionTag}>Mission</span>
                 <span className={styles.missionId}>EX-{islandId.toUpperCase()}-001</span>
               </div>
               <div className={styles.missionBody}>
-                <p className={styles.missionProblem}>{content.example.problem}</p>
+                <p className={styles.missionProblem}>{localizedContent.example.problem}</p>
 
                 {/* Given values as legend chips */}
-                {content.example.given.length > 0 && (
+                {localizedContent.example.given.length > 0 && (
                   <div className={styles.formulaLegend}>
-                    {content.example.given.map((g, i) => (
+                    {localizedContent.example.given.map((g, i) => (
                       <div key={i} className={styles.legendChip}>
                         <span className={styles.legendSym}>{g.label}</span>
                         <span className={styles.legendDef}>{g.value}</span>
@@ -226,19 +240,21 @@ export default function LearnPage() {
                     onClick={() => { playClick(); setShowSolution(s => !s) }}
                     aria-expanded={showSolution}
                   >
-                    {showSolution ? '▲ ซ่อนวิธีทำ' : '▶ ดูวิธีทำ'}
+                    {showSolution
+                      ? (lang === 'th' ? '▲ ซ่อนวิธีทำ' : '▲ Hide Solution')
+                      : (lang === 'th' ? '▶ ดูวิธีทำ' : '▶ Show Solution')}
                   </button>
 
                   <div className={`${styles.solutionContent} ${showSolution ? styles.revealed : ''}`}>
                     <div className={styles.solutionInner}>
-                      {content.example.solution.map((step, i) => (
+                      {localizedContent.example.solution.map((step, i) => (
                         <div key={i} className={styles.solutionStep}>
                           <span className={styles.stepNum}>{i + 1}.</span>
                           <span className={styles.stepFormula}>{step}</span>
                         </div>
                       ))}
                       <div className={styles.solutionAnswer}>
-                        คำตอบ: {content.example.answer}
+                        {lang === 'th' ? 'คำตอบ: ' : 'Answer: '}{localizedContent.example.answer}
                       </div>
                     </div>
                   </div>
@@ -255,7 +271,9 @@ export default function LearnPage() {
               onClick={handleDone}
               disabled={done}
             >
-              {done ? 'กำลังกลับ...' : 'เรียนจบแล้ว — กลับแผนที่'}
+              {done
+                ? (lang === 'th' ? 'กำลังกลับ...' : 'Returning...')
+                : (lang === 'th' ? 'เรียนจบแล้ว — กลับแผนที่' : 'Done Learning — Back to Map')}
             </button>
           </div>
         </main>
@@ -266,13 +284,13 @@ export default function LearnPage() {
             <Mascot pose="teaching" size={80} />
             <div className={styles.speechArea}>
               <div className={styles.speechBubble}>
-                {content.mascotLines[mascotLine]}
+                {localizedContent.mascotLines[mascotLine]}
               </div>
               <button
                 id="nextSpeechBtn"
                 className={styles.nextSpeechBtn}
                 onClick={nextMascotLine}
-                aria-label="ข้อความถัดไป"
+                aria-label={lang === 'th' ? 'ข้อความถัดไป' : 'Next message'}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M9 18 L15 12 L9 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />

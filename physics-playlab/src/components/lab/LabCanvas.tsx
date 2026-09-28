@@ -5,6 +5,8 @@ import { GRAVITY } from '@/lib/physicsEngine'
 interface LabCanvasProps {
   islandId: string
   isRunning: boolean
+  isPaused?: boolean
+  resetKey?: number
   time: number
   u?: number
   a?: number
@@ -20,7 +22,7 @@ interface LabCanvasProps {
 }
 
 export default function LabCanvas({
-  islandId, isRunning, time,
+  islandId, isRunning, isPaused = false, resetKey = 0, time,
   u = 0, a = 0, height = 50, v0 = 15, angle = 45,
   friction = 0, force = 10, mass = 5, mass2 = 5,
   onFinish, onStateUpdate,
@@ -29,6 +31,7 @@ export default function LabCanvas({
   const animFrameIdRef = useRef<number | null>(null)
   const physicsTimeRef = useRef<number>(0)
   const isRunningRef = useRef<boolean>(isRunning)
+  const isPausedRef = useRef<boolean>(isPaused)
   const finishedRef = useRef<boolean>(false)
   const onFinishRef = useRef(onFinish)
   const onStateUpdateRef = useRef(onStateUpdate)
@@ -38,9 +41,17 @@ export default function LabCanvas({
 
   useEffect(() => {
     isRunningRef.current = isRunning
-    physicsTimeRef.current = 0
     if (isRunning) finishedRef.current = false
   }, [isRunning])
+
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
+
+  useEffect(() => {
+    physicsTimeRef.current = 0
+    finishedRef.current = false
+  }, [resetKey])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -186,7 +197,8 @@ export default function LabCanvas({
       ctx.clearRect(0, 0, W, H)
 
       let t = physicsTimeRef.current
-      if (isRunningRef.current) {
+      const isActive = isRunningRef.current && !isPausedRef.current
+      if (isActive) {
         physicsTimeRef.current += 1 / 60
         t = physicsTimeRef.current
       }
@@ -253,7 +265,7 @@ export default function LabCanvas({
         ctx.fillText(`v: ${v.toFixed(2)} m/s`, 20, 70)
 
         // Speed lines (draw BEFORE mascot)
-        if (isRunningRef.current && Math.abs(v) > 0.1) {
+        if (isActive && Math.abs(v) > 0.1) {
           ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 3
           ctx.beginPath()
           ctx.moveTo(cx - 65, 248); ctx.lineTo(cx - 50, 248)
@@ -645,4 +657,3 @@ export default function LabCanvas({
     </div>
   )
 }
-

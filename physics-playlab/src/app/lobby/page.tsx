@@ -3,11 +3,15 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Mascot from '@/components/mascot/Mascot'
 import SpeechBubble from '@/components/mascot/SpeechBubble'
-import { MAIN_ISLANDS, SubIsland } from '@/data/islands'
+import { MAIN_ISLANDS, SubIsland, getIslandName } from '@/data/islands'
 import { getProgress, getUserName, getIslandStatus, clearProgress, getUnlockSeen, markUnlockSeen } from '@/lib/progress'
 import { playClick, playPop, playOpen, playClose } from '@/lib/sounds'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { LOBBY } from '@/data/translations/lobby'
+import LanguageToggle from '@/components/LanguageToggle'
 import styles from './page.module.css'
 import LobbyParticles from '@/components/lobby/LobbyParticles'
 import OceanWave from '@/components/lobby/OceanWave'
@@ -16,7 +20,8 @@ type IslandStatus = 'locked' | 'available' | 'in-progress' | 'completed'
 
 export default function LobbyPage() {
   const router = useRouter()
-  const [userName, setUserName] = useState('นักเรียน')
+  const lang = useLanguage()
+  const [userName, setUserName] = useState('Student')
   const [selectedIsland, setSelectedIsland] = useState<SubIsland | null>(null)
   const [showIntro, setShowIntro] = useState(false)
   const [introPhase, setIntroPhase] = useState<'flying' | 'wave' | 'done'>('flying')
@@ -136,36 +141,41 @@ export default function LobbyPage() {
       setTimeout(() => {
         setIntroPhase('done')
         setShowIntro(false)
-        setMascotSpeech(`ยินดีต้อนรับ ${getUserName()}! เลือกเกาะที่อยากลองก่อนได้เลย`)
+        setMascotSpeech(`${t('lobby.welcome', LOBBY, lang)} ${getUserName()}! ${t('lobby.selectIsland', LOBBY, lang)}`)
       }, 3800)
     } else {
-      setMascotSpeech(`${getUserName()} กลับมาแล้ว ไปต่อกันได้เลย!`)
+      setMascotSpeech(`${getUserName()} ${t('lobby.welcomeBack', LOBBY, lang)}`)
     }
-  }, [router])
+  }, [router, lang])
 
   useEffect(() => {
     if (unlockQueue.length === 0 || currentUnlock) return
     const [next, ...rest] = unlockQueue
     setCurrentUnlock(next)
-    setMascotSpeech('เกาะใหม่ unlock แล้ว! ไปลองดูกัน!')
-    const t = setTimeout(() => {
+    setMascotSpeech(t('lobby.newUnlock', LOBBY, lang))
+    const timeout = setTimeout(() => {
       markUnlockSeen(next)
       setCurrentUnlock(null)
       setUnlockQueue(rest)
     }, 2200)
-    return () => clearTimeout(t)
-  }, [unlockQueue, currentUnlock])
+    return () => clearTimeout(timeout)
+  }, [unlockQueue, currentUnlock, lang])
 
   const handleIslandClick = (island: SubIsland) => {
     const status = islandStatuses[island.id]
     if (status === 'locked') {
       playClick()
-      setMascotSpeech('ยังเข้าไม่ได้นะ ลองทำเกาะก่อนหน้าให้จบก่อน')
+      const unlockReq = lang === 'th'
+        ? 'ยังเข้าไม่ได้นะ ลองทำเกาะก่อนหน้าให้จบก่อน'
+        : 'Still locked. Complete the previous island first.'
+      setMascotSpeech(unlockReq)
       return
     }
     playPop()
     setSelectedIsland(island)
-    setMascotSpeech(`โอเค ${island.name} แล้วไปกัน!`)
+    const okMsg = lang === 'th' ? 'โอเค' : 'OK'
+    const letsGo = lang === 'th' ? 'แล้วไปกัน!' : 'Let\'s go!'
+    setMascotSpeech(`${okMsg} ${getIslandName(island, lang)} ${letsGo}`)
   }
 
   const handleModeSelect = (mode: 'learn' | 'lab' | 'quiz') => {
@@ -193,10 +203,10 @@ export default function LobbyPage() {
   }
 
   const statusLabel: Record<IslandStatus, string> = {
-    locked: 'ล็อค',
-    available: 'พร้อมเรียน',
-    'in-progress': 'กำลังเรียน',
-    completed: 'สำเร็จแล้ว',
+    locked: t('lobby.status.locked', LOBBY, lang),
+    available: t('lobby.status.available', LOBBY, lang),
+    'in-progress': t('lobby.status.inProgress', LOBBY, lang),
+    completed: t('lobby.status.completed', LOBBY, lang),
   }
 
   return (
@@ -208,7 +218,7 @@ export default function LobbyPage() {
             <Mascot pose={introPhase === 'done' ? 'idle' : introPhase === 'wave' ? 'celebrating' : 'flying'} size={180} />
             {introPhase === 'wave' && (
               <SpeechBubble
-                text={`สวัสดี ${userName}! ยินดีต้อนรับสู่ Physics PlayLab!`}
+                text={lang === 'th' ? `สวัสดี ${userName}! ยินดีต้อนรับสู่ Physics PlayLab!` : `Hello ${userName}! Welcome to Physics PlayLab!`}
                 direction="right"
                 delay={200}
               />
@@ -275,7 +285,8 @@ export default function LobbyPage() {
           </div>
         </div>
         <div className={styles.topRight}>
-<span className={styles.userName}>
+          <LanguageToggle />
+          <span className={styles.userName}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="8" r="4" fill="#4caf50" />
               <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#4caf50" />
@@ -285,16 +296,16 @@ export default function LobbyPage() {
           <button
             className={styles.logoutBtn}
             onClick={() => { clearProgress(); signOut(auth); router.push('/login') }}
-            aria-label="ออกจากระบบ"
+            aria-label={t('lobby.logout', LOBBY, lang)}
           >
-            ออก
+            {t('lobby.logoutShort', LOBBY, lang)}
           </button>
         </div>
       </div>
 
       {/* Main world map */}
       <main className={styles.worldMap} role="main">
-        <h1 className={styles.mapTitle}>แผนที่โลกฟิสิกส์</h1>
+        <h1 className={styles.mapTitle}>{t('lobby.mapTitle', LOBBY, lang)}</h1>
 
 
         {/* Islands grid */}
@@ -315,7 +326,7 @@ export default function LobbyPage() {
                     </svg>
                   )}
                 </div>
-                <span>{main.name}</span>
+                <span>{getIslandName(main, lang)}</span>
               </div>
 
               {/* Sub-islands — no platform wrapper */}
@@ -343,12 +354,12 @@ export default function LobbyPage() {
                         )}
 
                         {nextIslandId === sub.id && (
-                          <div className={styles.nextBadge}>ไปต่อ!</div>
+                          <div className={styles.nextBadge}>{t('lobby.continue', LOBBY, lang)}</div>
                         )}
                         <button
                           className={`${styles.subIsland} ${styles[`status--${status}`]}`}
                           onClick={() => handleIslandClick(sub)}
-                          aria-label={`${sub.name} — ${statusLabel[status]}`}
+                          aria-label={`${getIslandName(sub, lang)} — ${statusLabel[status]}`}
                         >
                           {/* Island shape - replaced with high-quality PNG */}
                           <div
@@ -358,7 +369,7 @@ export default function LobbyPage() {
                           >
                             <img
                               src={islandImages[sub.id]}
-                              alt={sub.name}
+                              alt={getIslandName(sub, lang)}
                               className={styles.islandImg}
                             />
 
@@ -388,7 +399,7 @@ export default function LobbyPage() {
 
                           {/* Island name */}
                           <div className={styles.islandLabel}>
-                            <span className={styles.islandName}>{sub.name}</span>
+                            <span className={styles.islandName}>{getIslandName(sub, lang)}</span>
                             <span
                               className={styles.islandStatus}
                               style={{ color: statusColor[status] }}
@@ -428,7 +439,7 @@ export default function LobbyPage() {
               </div>
               <h2 className={styles.sandboxTitle}>Lab Sandbox</h2>
               <p className={styles.sandboxDesc}>
-                เปิดกล้อง ใช้มือหยิบ object ได้โดยตรง — เห็นแรง, ความเร็ว, พลังงาน ทำงานแบบ real-time
+                {t('lobby.sandbox.description', LOBBY, lang)}
               </p>
               <div className={styles.sandboxTags}>
                 <span className={styles.sandboxTag}>Energy Graph</span>
@@ -446,7 +457,7 @@ export default function LobbyPage() {
                 <circle cx="14.5" cy="15.5" r="1.5" fill="currentColor"/>
                 <circle cx="10.5" cy="14" r="1" fill="currentColor" opacity="0.7"/>
               </svg>
-              เริ่มทดลอง
+              {t('lobby.sandbox.start', LOBBY, lang)}
             </button>
           </div>
         </div>
@@ -459,13 +470,13 @@ export default function LobbyPage() {
           onClick={() => setSelectedIsland(null)}
           role="dialog"
           aria-modal="true"
-          aria-label={`รายละเอียด ${selectedIsland.name}`}
+          aria-label={`${lang === 'th' ? 'รายละเอียด' : 'Details'} ${getIslandName(selectedIsland, lang)}`}
         >
           <div className={styles.panel} onClick={e => e.stopPropagation()}>
             <button
               className={styles.panelClose}
               onClick={() => setSelectedIsland(null)}
-              aria-label="ปิด"
+              aria-label={t('lobby.close', LOBBY, lang)}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M18 6 L6 18 M6 6 L18 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
@@ -475,8 +486,8 @@ export default function LobbyPage() {
             <div className={styles.panelHeader}>
               <Mascot pose="teaching" size={90} />
               <div>
-                <h2 className={styles.panelTitle}>{selectedIsland.name}</h2>
-                <p className={styles.panelDesc}>{selectedIsland.description}</p>
+                <h2 className={styles.panelTitle}>{getIslandName(selectedIsland, lang)}</h2>
+                <p className={styles.panelDesc}>{lang === 'th' ? selectedIsland.description : selectedIsland.descriptionEn}</p>
                 <span
                   className={`badge ${islandStatuses[selectedIsland.id] === 'completed' ? 'badge-success' : islandStatuses[selectedIsland.id] === 'locked' ? 'badge-locked' : 'badge-progress'}`}
                 >
@@ -500,7 +511,7 @@ export default function LobbyPage() {
                 </div>
                 <div>
                   <p className={styles.modeName}>Learn</p>
-                  <p className={styles.modeDesc}>เรียนรู้เนื้อหาและสูตร</p>
+                  <p className={styles.modeDesc}>{t('lobby.mode.learnDescription', LOBBY, lang)}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.modeArrow}>
                   <path d="M9 18 L15 12 L9 6" stroke="#4caf50" strokeWidth="2.5" strokeLinecap="round" />
@@ -521,7 +532,7 @@ export default function LobbyPage() {
                 </div>
                 <div>
                   <p className={styles.modeName}>Lab</p>
-                  <p className={styles.modeDesc}>ทดลองจำลองฟิสิกส์จริง</p>
+                  <p className={styles.modeDesc}>{t('lobby.mode.labDescription', LOBBY, lang)}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.modeArrow}>
                   <path d="M9 18 L15 12 L9 6" stroke="#1a7fa0" strokeWidth="2.5" strokeLinecap="round" />
@@ -542,7 +553,7 @@ export default function LobbyPage() {
                 </div>
                 <div>
                   <p className={styles.modeName}>Quiz</p>
-                  <p className={styles.modeDesc}>ทดสอบ 10 ข้อ · ปักธงเมื่อได้ 8+</p>
+                  <p className={styles.modeDesc}>{t('lobby.mode.quizDescription', LOBBY, lang)}</p>
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={styles.modeArrow}>
                   <path d="M9 18 L15 12 L9 6" stroke="#ff9800" strokeWidth="2.5" strokeLinecap="round" />
@@ -556,20 +567,20 @@ export default function LobbyPage() {
                 const quizDone = ip.quizScore >= 0
                 return (
                   <div className={styles.panelChecklist}>
-                    <p className={styles.panelChecklistTitle}>ความคืบหน้า</p>
+                    <p className={styles.panelChecklistTitle}>{t('lobby.progress.title', LOBBY, lang)}</p>
                     <div className={styles.checklistItem}>
                       <span className={`${styles.checkDot} ${ip.learnDone ? styles['checkDot--done'] : styles['checkDot--pending']}`}>
                         {ip.learnDone ? '✓' : '–'}
                       </span>
                       <span className={`${styles.checkLabel} ${ip.learnDone ? styles['checkLabel--done'] : ''}`}>Learn</span>
-                      <span className={`${styles.checkMeta} ${ip.learnDone ? styles['checkMeta--done'] : ''}`}>{ip.learnDone ? 'สำเร็จ' : 'ยังไม่ได้ทำ'}</span>
+                      <span className={`${styles.checkMeta} ${ip.learnDone ? styles['checkMeta--done'] : ''}`}>{ip.learnDone ? t('lobby.progress.done', LOBBY, lang) : t('lobby.progress.notStarted', LOBBY, lang)}</span>
                     </div>
                     <div className={styles.checklistItem}>
                       <span className={`${styles.checkDot} ${ip.labDone ? styles['checkDot--done'] : styles['checkDot--pending']}`}>
                         {ip.labDone ? '✓' : '–'}
                       </span>
                       <span className={`${styles.checkLabel} ${ip.labDone ? styles['checkLabel--done'] : ''}`}>Lab</span>
-                      <span className={`${styles.checkMeta} ${ip.labDone ? styles['checkMeta--done'] : ''}`}>{ip.labDone ? 'สำเร็จ' : 'ยังไม่ได้ทำ'}</span>
+                      <span className={`${styles.checkMeta} ${ip.labDone ? styles['checkMeta--done'] : ''}`}>{ip.labDone ? t('lobby.progress.done', LOBBY, lang) : t('lobby.progress.notStarted', LOBBY, lang)}</span>
                     </div>
                     <div className={styles.checklistItem}>
                       <span className={`${styles.checkDot} ${quizDone ? styles['checkDot--done'] : styles['checkDot--pending']}`}>
@@ -581,7 +592,7 @@ export default function LobbyPage() {
                           {[1,2,3].map(n => <span key={n} className={n <= stars ? styles.starOn : styles.starOff}>★</span>)}
                         </span>
                       ) : (
-                        <span className={styles.checkMeta}>ยังไม่ได้ทำ</span>
+                        <span className={styles.checkMeta}>{t('lobby.progress.notStarted', LOBBY, lang)}</span>
                       )}
                     </div>
                   </div>
@@ -613,7 +624,7 @@ export default function LobbyPage() {
         return (
           <div className={styles.progressStrip}>
             <span className={styles.progressStat}>
-              <strong>{completedCount}</strong>/{allSubs.length} เกาะ
+              <strong>{completedCount}</strong>/{allSubs.length} {t('lobby.progress.islands', LOBBY, lang)}
             </span>
             <div className={styles.progressDivider} />
             <div className={styles.progressBarTrack}>
@@ -621,7 +632,7 @@ export default function LobbyPage() {
             </div>
             <div className={styles.progressDivider} />
             <span className={styles.progressStat}>
-              <strong>{totalStars}</strong>/{allSubs.length * 3} ดาว
+              <strong>{totalStars}</strong>/{allSubs.length * 3} {t('lobby.progress.starsLabel', LOBBY, lang)}
             </span>
           </div>
         )

@@ -1,5 +1,8 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { LAB } from '@/data/translations/lab'
 
 interface DataPoint { t: number; s: number; v: number }
 interface Props { isRunning: boolean; data: DataPoint[] }
@@ -17,6 +20,7 @@ function niceMax(val: number): number {
 
 export default function DataChart({ data }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const lang = useLanguage()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -136,7 +140,7 @@ export default function DataChart({ data }: Props) {
       ctx.fillStyle = 'rgba(34,211,238,0.12)'
       ctx.font = `11px Courier New, monospace`
       ctx.textAlign = 'center'
-      ctx.fillText('-- รอข้อมูล --', L + gW / 2, T + gH / 2 + 4)
+      ctx.fillText(`-- ${t('lab.chart.waiting', LAB, lang)} --`, L + gW / 2, T + gH / 2 + 4)
     }
 
     // Axis labels
@@ -153,7 +157,7 @@ export default function DataChart({ data }: Props) {
     ctx.font = '9px Courier New, monospace'
     ctx.textAlign = 'right'
     ctx.fillText('t(s)', W - R, T + gH + 14)
-  }, [data])
+  }, [data, lang])
 
   return (
     <div style={{

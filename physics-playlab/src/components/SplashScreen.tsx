@@ -1,5 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { COMMON } from '@/lib/i18n'
 import styles from './SplashScreen.module.css'
 
 const TOTAL = 20
@@ -7,6 +10,7 @@ const FPS = 15
 
 export default function SplashScreen() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const lang = useLanguage()
   const [show, setShow] = useState(false)
   const [fade, setFade] = useState(false)
 
@@ -103,7 +107,7 @@ export default function SplashScreen() {
     <div className={`${styles.overlay} ${fade ? styles.fade : ''}`}>
       <canvas ref={canvasRef} className={styles.canvas} />
       <p className={styles.title}>Physics PlayLab</p>
-      <p className={styles.sub}>กำลังโหลด...</p>
+      <p className={styles.sub}>{t('loading.loading', COMMON, lang)}</p>
     </div>
   )
 }

@@ -1,9 +1,13 @@
 'use client'
 import { useState } from 'react'
 import { startBgMusic, stopBgMusic } from '@/lib/bgMusic'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { COMMON } from '@/lib/i18n'
 
 export default function MusicToggle() {
   const [on, setOn] = useState(false)
+  const lang = useLanguage()
 
   const toggle = () => {
     if (on) { stopBgMusic(); setOn(false) }
@@ -13,7 +17,7 @@ export default function MusicToggle() {
   return (
     <button
       onClick={toggle}
-      title={on ? 'ปิดเพลง' : 'เปิดเพลง'}
+      title={t(on ? 'audio.turnOff' : 'audio.turnOn', COMMON, lang)}
       style={{
         position: 'fixed', bottom: 18, left: 18, zIndex: 999,
         width: 42, height: 42, borderRadius: '50%',

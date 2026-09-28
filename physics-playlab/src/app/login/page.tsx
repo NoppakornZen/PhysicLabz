@@ -9,19 +9,24 @@ import SpeechBubble from '@/components/mascot/SpeechBubble'
 import WelcomeAnimation from '@/components/mascot/WelcomeAnimation'
 import { getProgress, initProgress, saveProgress } from '@/lib/progress'
 import { playComplete } from '@/lib/sounds'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { AUTH } from '@/data/translations/auth'
+import LanguageToggle from '@/components/LanguageToggle'
 import styles from './page.module.css'
 
-const ERRORS: Record<string, string> = {
-  'auth/email-already-in-use': 'อีเมลนี้ถูกใช้แล้ว',
-  'auth/invalid-email': 'รูปแบบอีเมลไม่ถูกต้อง',
-  'auth/weak-password': 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
-  'auth/user-not-found': 'ไม่พบบัญชีนี้',
-  'auth/wrong-password': 'รหัสผ่านไม่ถูกต้อง',
-  'auth/invalid-credential': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+const ERROR_CODES: Record<string, string> = {
+  'auth/email-already-in-use': 'auth.error.emailInUse',
+  'auth/invalid-email': 'auth.error.invalidEmail',
+  'auth/weak-password': 'auth.error.weakPassword',
+  'auth/user-not-found': 'auth.error.userNotFound',
+  'auth/wrong-password': 'auth.error.wrongPassword',
+  'auth/invalid-credential': 'auth.error.invalidCredential',
 }
 
 export default function LoginPage() {
   const router = useRouter()
+  const lang = useLanguage()
   const [tab, setTab] = useState<'signin' | 'signup'>('signin')
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
@@ -30,8 +35,9 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showAnim, setShowAnim] = useState(false)
   const [animName, setAnimName] = useState('')
-  const [mascotSpeech] = useState('เฮ้! นูโตะอยู่นี่เอง ฟิสิกส์ไม่ได้น่ากลัวอย่างที่คิดนะ')
   const justAuthedRef = useRef(false)
+
+  const mascotSpeech = t('auth.mascot.welcome', AUTH, lang)
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -46,20 +52,26 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!email || !password) { setError('กรุณากรอกข้อมูลให้ครบ'); return }
-    if (tab === 'signup' && !displayName.trim()) { setError('กรุณาใส่ชื่อของคุณ'); return }
+    if (!email || !password) {
+      setError(t('auth.error.required', AUTH, lang))
+      return
+    }
+    if (tab === 'signup' && !displayName.trim()) {
+      setError(t('auth.error.nameRequired', AUTH, lang))
+      return
+    }
     setIsLoading(true)
     try {
       justAuthedRef.current = true
       if (tab === 'signup') {
         const { user } = await createUserWithEmailAndPassword(auth, email, password)
-        const name = displayName.trim() || user.email?.split('@')[0] || 'นักเรียน'
+        const name = displayName.trim() || user.email?.split('@')[0] || 'Student'
         initProgress(name)
         await syncUser(user.uid, user.email!, name)
         setAnimName(name)
       } else {
         const { user } = await signInWithEmailAndPassword(auth, email, password)
-        let name = user.email?.split('@')[0] || 'นักเรียน'
+        let name = user.email?.split('@')[0] || 'Student'
         if (user.email !== ADMIN_EMAIL) {
           const firestoreProgress = await loadProgress(user.uid)
           if (firestoreProgress) {
@@ -78,7 +90,8 @@ export default function LoginPage() {
       setShowAnim(true)
     } catch (err: any) {
       justAuthedRef.current = false
-      setError(ERRORS[err.code] ?? 'มีบางอย่างผิดพลาด ลองใหม่ดูนะ')
+      const errorKey = ERROR_CODES[err.code] || 'auth.error.generic'
+      setError(t(errorKey, AUTH, lang))
       setIsLoading(false)
     }
   }
@@ -89,7 +102,7 @@ export default function LoginPage() {
     try {
       justAuthedRef.current = true
       const { user } = await signInWithPopup(auth, new GoogleAuthProvider())
-      const name = user.displayName || user.email?.split('@')[0] || 'นักเรียน'
+      const name = user.displayName || user.email?.split('@')[0] || 'Student'
       const firestoreProgress = await loadProgress(user.uid)
       if (firestoreProgress) {
         saveProgress(firestoreProgress)
@@ -102,7 +115,8 @@ export default function LoginPage() {
       setShowAnim(true)
     } catch (err: any) {
       justAuthedRef.current = false
-      setError(ERRORS[err.code] ?? 'มีบางอย่างผิดพลาด ลองใหม่ดูนะ')
+      const errorKey = ERROR_CODES[err.code] || 'auth.error.generic'
+      setError(t(errorKey, AUTH, lang))
       setIsLoading(false)
     }
   }
@@ -137,10 +151,11 @@ export default function LoginPage() {
               <circle cx="18" cy="24" r="3" fill="white" />
             </svg>
           </div>
-          <div>
-            <h1 className={styles.title}>Physics PlayLab</h1>
-            <p className={styles.subtitle}>ฟิสิกส์ไม่ยากอย่างที่คิด — มาลองดูด้วยกัน</p>
+          <div style={{ flex: 1 }}>
+            <h1 className={styles.title}>{t('auth.title', AUTH, lang)}</h1>
+            <p className={styles.subtitle}>{t('auth.subtitle', AUTH, lang)}</p>
           </div>
+          <LanguageToggle />
         </div>
 
         <div className={styles.mascotSection}>
@@ -158,14 +173,14 @@ export default function LoginPage() {
             className={tab === 'signin' ? styles.tabActive : styles.tabInactive}
             onClick={() => { setTab('signin'); setError('') }}
           >
-            เข้าสู่ระบบ
+            {t('auth.tab.signin', AUTH, lang)}
           </button>
           <button
             type="button"
             className={tab === 'signup' ? styles.tabActive : styles.tabInactive}
             onClick={() => { setTab('signup'); setError('') }}
           >
-            สมัครสมาชิก
+            {t('auth.tab.signup', AUTH, lang)}
           </button>
         </div>
 
@@ -175,7 +190,7 @@ export default function LoginPage() {
               type="text"
               value={displayName}
               onChange={e => { setDisplayName(e.target.value); setError('') }}
-              placeholder="ชื่อเล่นหรือชื่อจริงก็ได้"
+              placeholder={t('auth.field.name', AUTH, lang)}
               className={styles.input}
               maxLength={20}
               disabled={isLoading}
@@ -185,7 +200,7 @@ export default function LoginPage() {
             type="email"
             value={email}
             onChange={e => { setEmail(e.target.value); setError('') }}
-            placeholder="อีเมล"
+            placeholder={t('auth.field.email', AUTH, lang)}
             className={`${styles.input} ${error ? styles.inputError : ''}`}
             disabled={isLoading}
             autoComplete="email"
@@ -194,7 +209,7 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={e => { setPassword(e.target.value); setError('') }}
-            placeholder="รหัสผ่าน อย่างน้อย 6 ตัว"
+            placeholder={t('auth.field.password', AUTH, lang)}
             className={`${styles.input} ${error ? styles.inputError : ''}`}
             disabled={isLoading}
             autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
@@ -202,16 +217,16 @@ export default function LoginPage() {
           {error && <p className={styles.errorText} role="alert">{error}</p>}
           <button type="submit" className={`btn btn-primary ${styles.startBtn}`} disabled={isLoading}>
             {isLoading
-              ? <span className={styles.loadingDots}>รอแป๊บนึง</span>
-              : tab === 'signup' ? 'สมัครแล้วเริ่มเลย' : 'เข้าสู่ระบบ'}
+              ? <span className={styles.loadingDots}>{t('auth.button.loading', AUTH, lang)}</span>
+              : tab === 'signup' ? t('auth.button.signup', AUTH, lang) : t('auth.button.signin', AUTH, lang)}
           </button>
         </form>
 
-        <div className={styles.divider}><span>หรือ</span></div>
+        <div className={styles.divider}><span>{t('auth.divider', AUTH, lang)}</span></div>
 
         <button type="button" className={styles.googleBtn} onClick={handleGoogleLogin} disabled={isLoading}>
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4A90D9" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          เข้าสู่ระบบด้วย Google
+          {t('auth.button.google', AUTH, lang)}
         </button>
 
         <div className={styles.formulaRow} aria-hidden="true">

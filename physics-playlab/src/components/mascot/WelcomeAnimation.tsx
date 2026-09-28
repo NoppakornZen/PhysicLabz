@@ -1,5 +1,8 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { AUTH } from '@/data/translations/auth'
 import styles from './WelcomeAnimation.module.css'
 
 const TOTAL_FRAMES = 20
@@ -12,6 +15,7 @@ interface WelcomeAnimationProps {
 
 export default function WelcomeAnimation({ name, onDone }: WelcomeAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const lang = useLanguage()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -118,8 +122,8 @@ export default function WelcomeAnimation({ name, onDone }: WelcomeAnimationProps
     <div className={styles.overlay}>
       <div className={styles.box}>
         <canvas ref={canvasRef} className={styles.canvas} width={360} height={360} />
-        <p className={styles.welcome}>ยินดีต้อนรับ <span>{name}</span>!</p>
-        <p className={styles.sub}>กำลังพาไปยังเกาะฟิสิกส์...</p>
+        <p className={styles.welcome}>{t('auth.welcomeAnimation.welcome', AUTH, lang)} <span>{name}</span>!</p>
+        <p className={styles.sub}>{t('auth.welcomeAnimation.sub', AUTH, lang)}</p>
       </div>
     </div>
   )

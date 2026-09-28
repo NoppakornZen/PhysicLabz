@@ -1,6 +1,10 @@
 'use client'
 import Link from 'next/link'
-import { MAIN_ISLANDS } from '@/data/islands'
+import { MAIN_ISLANDS, getIslandName, getIslandDescription } from '@/data/islands'
+import { useLanguage } from '@/hooks/useLanguage'
+import { t } from '@/lib/i18n'
+import { LANDING } from '@/data/translations/landing'
+import LanguageToggle from '@/components/LanguageToggle'
 import styles from './page.module.css'
 
 const ISLAND_EMOJIS: Record<string, string> = {
@@ -23,6 +27,8 @@ const FLOATING_FORMULAS = [
 ]
 
 export default function LandingPage() {
+  const lang = useLanguage()
+
   return (
     <div className={styles.page}>
       <div className={styles.scanLine} aria-hidden="true" />
@@ -40,8 +46,9 @@ export default function LandingPage() {
           </span>
         </div>
         <div className={styles.navLinks}>
-          <Link href="/login" className={styles.navLink}>เข้าสู่ระบบ</Link>
-          <Link href="/login" className={`${styles.navLink} ${styles['navLink--solid']}`}>สมัครฟรี</Link>
+          <LanguageToggle />
+          <Link href="/login" className={styles.navLink}>{t('landing.nav.login', LANDING, lang)}</Link>
+          <Link href="/login" className={`${styles.navLink} ${styles['navLink--solid']}`}>{t('landing.nav.signupFree', LANDING, lang)}</Link>
         </div>
       </nav>
 
@@ -71,22 +78,22 @@ export default function LandingPage() {
         ))}
 
         <div className={styles.heroContent}>
-          <p className={styles.heroKicker}>physics education platform</p>
+          <p className={styles.heroKicker}>{t('landing.hero.kicker', LANDING, lang)}</p>
           <h1 className={styles.heroTitle}>
-            เรียน<span className={styles.heroTitleAccent}>ฟิสิกส์</span><br />
-            ด้วยการลงมือเล่น
+            {t('landing.hero.title.learn', LANDING, lang)}<span className={styles.heroTitleAccent}>{t('landing.hero.title.physics', LANDING, lang)}</span><br />
+            {t('landing.hero.title.byDoing', LANDING, lang)}
           </h1>
           <p className={styles.heroSub}>
-            ทดลองสูตร ดูกราฟแบบเรียลไทม์ ทำโจทย์ที่รู้สึกเหมือนเกม — ไม่ใช่แค่ท่องจำ
+            {t('landing.hero.subtitle', LANDING, lang)}
           </p>
           <div className={styles.heroCta}>
             <Link href="/login" className={styles.ctaSolid}>
-              เริ่มเรียนฟรี
+              {t('landing.hero.cta.start', LANDING, lang)}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            <Link href="/login" className={styles.ctaOutline}>เข้าสู่ระบบ</Link>
+            <Link href="/login" className={styles.ctaOutline}>{t('landing.hero.cta.login', LANDING, lang)}</Link>
           </div>
         </div>
 
@@ -99,17 +106,17 @@ export default function LandingPage() {
       {/* ── Modes section ── */}
       <section className={styles.modesSection} aria-labelledby="modesHeading">
         <div className={styles.modesSectionHead}>
-          <h2 id="modesHeading">สามโหมด สามวิธีเรียน</h2>
+          <h2 id="modesHeading">{t('landing.modes.heading', LANDING, lang)}</h2>
           <div className={styles.modesLine} aria-hidden="true" />
         </div>
 
         {/* Panel 1: LEARN — terminal readout */}
         <div className={styles.modeLearn}>
           <div className={styles.modeLearnLeft}>
-            <p className={`${styles.modeName} ${styles['modeName--learn']}`}>01 · Learn</p>
-            <h3 className={styles.modeTitle}>อ่านน้อย เข้าใจมาก</h3>
+            <p className={`${styles.modeName} ${styles['modeName--learn']}`}>{t('landing.mode.learn.label', LANDING, lang)}</p>
+            <h3 className={styles.modeTitle}>{t('landing.mode.learn.title', LANDING, lang)}</h3>
             <p className={styles.modeBody}>
-              เนื้อหาที่เล่าเรื่องได้ ไม่ใช่แค่ list สูตร — ทุก concept มี visual และตัวอย่างโจทย์ที่คิดตาม
+              {t('landing.mode.learn.body', LANDING, lang)}
             </p>
           </div>
           <div className={styles.modeLearnRight} aria-hidden="true">
@@ -132,10 +139,10 @@ export default function LandingPage() {
         {/* Panel 2: LAB — oscilloscope, amber, RTL-flipped */}
         <div className={styles.modeLab}>
           <div className={styles.modeLabLeft}>
-            <p className={`${styles.modeName} ${styles['modeName--lab']}`}>02 · Lab</p>
-            <h3 className={styles.modeTitle}>ทดลองได้เลย ไม่ต้องรอ</h3>
+            <p className={`${styles.modeName} ${styles['modeName--lab']}`}>{t('landing.mode.lab.label', LANDING, lang)}</p>
+            <h3 className={styles.modeTitle}>{t('landing.mode.lab.title', LANDING, lang)}</h3>
             <p className={styles.modeBody}>
-              ขยับ slider เห็นกราฟเปลี่ยนทันที — เหมือน lab จริงแต่ไม่ต้องกลัวเครื่องพัง
+              {t('landing.mode.lab.body', LANDING, lang)}
             </p>
           </div>
           <div className={styles.modeLabRight} aria-hidden="true">
@@ -170,19 +177,19 @@ export default function LandingPage() {
           </div>
           <div className={styles.modeQuizBody}>
             <div className={styles.modeQuizLeft}>
-              <p className={`${styles.modeName} ${styles['modeName--quiz']}`}>03 · Quiz</p>
-              <h3 className={styles.modeTitle}>รู้จริงหรือแค่จำ?</h3>
+              <p className={`${styles.modeName} ${styles['modeName--quiz']}`}>{t('landing.mode.quiz.label', LANDING, lang)}</p>
+              <h3 className={styles.modeTitle}>{t('landing.mode.quiz.title', LANDING, lang)}</h3>
               <p className={styles.modeBody}>
-                โจทย์ที่ทดสอบความเข้าใจ ไม่ใช่แค่แทนค่า — เฉลยทันทีพร้อมอธิบาย
+                {t('landing.mode.quiz.body', LANDING, lang)}
               </p>
             </div>
             <div className={styles.modeQuizRight} aria-hidden="true">
-              <span className={styles.quizQuestion}>&gt; ลูกบอลตกจากที่สูง 20 m จะใช้เวลา?</span>
+              <span className={styles.quizQuestion}>&gt; {t('landing.mode.quiz.question', LANDING, lang)}</span>
               <span className={styles.quizOption}>  A) 1.0 s</span>
               <span className={styles.quizOption}>  B) 1.5 s</span>
               <span className={`${styles.quizOption} ${styles.quizSelected}`}>  C) 2.0 s ◀</span>
               <span className={styles.quizOption}>  D) 2.5 s</span>
-              <span className={styles.quizResult}>  ✓ ถูกต้อง! h = ½gt²</span>
+              <span className={styles.quizResult}>  ✓ {t('landing.mode.quiz.correct', LANDING, lang)} h = ½gt²</span>
             </div>
           </div>
         </div>
@@ -191,7 +198,7 @@ export default function LandingPage() {
       {/* ── Islands section ── */}
       <section className={styles.islandsSection} aria-labelledby="islandsHeading">
         <div className={styles.islandsSectionHead}>
-          <h2 id="islandsHeading">หัวข้อที่รอคุณอยู่</h2>
+          <h2 id="islandsHeading">{t('landing.islands.heading', LANDING, lang)}</h2>
           <div className={styles.islandsLine} aria-hidden="true" />
         </div>
         <div className={styles.islandsTrack}>
@@ -209,10 +216,10 @@ export default function LandingPage() {
                 {ISLAND_EMOJIS[island.id] ?? '●'}
               </div>
               <div className={styles.islandNodeInfo}>
-                <p className={styles.islandNodeName}>{island.name}</p>
-                <p className={styles.islandNodeEn}>{island.nameEn}</p>
-                <p className={styles.islandNodeDesc}>{island.description}</p>
-                <span className={styles.islandNodeCount}>{island.subIslands.length} บท</span>
+                <p className={styles.islandNodeName}>{getIslandName(island, lang)}</p>
+                <p className={styles.islandNodeEn}>{lang === 'th' ? island.nameEn : island.name}</p>
+                <p className={styles.islandNodeDesc}>{getIslandDescription(island, lang)}</p>
+                <span className={styles.islandNodeCount}>{island.subIslands.length} {t('landing.islands.lessons', LANDING, lang)}</span>
               </div>
             </div>
           ))}
@@ -222,23 +229,23 @@ export default function LandingPage() {
       {/* ── Bottom CTA ── */}
       <section className={styles.ctaSection} aria-labelledby="ctaHeading">
         <h2 id="ctaHeading" className={styles.ctaTitle}>
-          พร้อมจะเข้าใจฟิสิกส์<br />ในแบบที่ไม่เคยได้ลองหรือยัง?
+          {t('landing.cta.title', LANDING, lang)}
         </h2>
-        <p className={styles.ctaSub}>ฟรี ไม่ต้องใช้บัตรเครดิต เริ่มได้เลยตอนนี้</p>
+        <p className={styles.ctaSub}>{t('landing.cta.subtitle', LANDING, lang)}</p>
         <div className={styles.ctaButtons}>
           <Link href="/login" className={styles.ctaSolid}>
-            สมัครสมาชิกฟรี
+            {t('landing.cta.signup', LANDING, lang)}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
-          <Link href="/login" className={styles.ctaOutline}>มีบัญชีอยู่แล้ว</Link>
+          <Link href="/login" className={styles.ctaOutline}>{t('landing.cta.hasAccount', LANDING, lang)}</Link>
         </div>
       </section>
 
       <footer className={styles.footer}>
-        <span className={styles.footerText}>© 2026 Physics PlayLab</span>
-        <span className={styles.footerText}>ฟิสิกส์ไม่ยากอย่างที่คิด</span>
+        <span className={styles.footerText}>{t('landing.footer.copyright', LANDING, lang)}</span>
+        <span className={styles.footerText}>{t('landing.footer.tagline', LANDING, lang)}</span>
       </footer>
     </div>
   )
