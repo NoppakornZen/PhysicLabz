@@ -5,6 +5,13 @@ let seqTimer: ReturnType<typeof setTimeout> | null = null
 let running = false
 let seqStep = 0
 
+const createAudioContext = (): AudioContext => {
+  const AudioContextConstructor = window.AudioContext
+    ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+  if (!AudioContextConstructor) throw new Error('AudioContext is not supported')
+  return new AudioContextConstructor()
+}
+
 // Pentatonic C major — always sounds pleasant
 const PENTATONIC = [130, 146, 164, 196, 220, 261, 293, 329, 392, 440, 523]
 
@@ -13,7 +20,7 @@ const MELODY = [4, 6, 8, 6, 4, 2, 4, 6, 8, 10, 8, 6, 4, 6, 2, 4]
 const BASS_NOTES = [0, 0, 2, 0] // low bass pattern
 
 const ac = (): AudioContext => {
-  if (!_ctx) _ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  if (!_ctx) _ctx = createAudioContext()
   if (_ctx.state === 'suspended') _ctx.resume()
   return _ctx
 }

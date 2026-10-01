@@ -17,7 +17,16 @@ const ISLAND_GLOW: Record<string, string> = {
   'newton-laws': 'rgba(26, 127, 160, 0.45)',
 }
 
-const FLOATING_FORMULAS = [
+type FloatingFormula = {
+  text: string
+  top: string
+  left?: string
+  right?: string
+  size: string
+  delay: string
+}
+
+const FLOATING_FORMULAS: FloatingFormula[] = [
   { text: 'F = ma', top: '18%', left: '8%', size: '2.2rem', delay: '0s' },
   { text: 'v = u + at', top: '72%', left: '6%', size: '1.4rem', delay: '-4s' },
   { text: 'E = ½mv²', top: '25%', right: '7%', size: '1.7rem', delay: '-2s' },
@@ -67,7 +76,7 @@ export default function LandingPage() {
             style={{
               top: f.top,
               left: 'left' in f ? f.left : undefined,
-              right: 'right' in f ? (f as any).right : undefined,
+              right: f.right,
               fontSize: f.size,
               animationDelay: f.delay,
               animationDuration: `${12 + i * 2.5}s`,

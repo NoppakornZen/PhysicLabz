@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Mascot from '@/components/mascot/Mascot'
 import SpeechBubble from '@/components/mascot/SpeechBubble'
-import { getSubIsland, getIslandName } from '@/data/islands'
+import { getSubIsland, getIslandName, type SubIsland } from '@/data/islands'
 import { updateIslandProgress, getProgress } from '@/lib/progress'
 import { playClick, playStart, playReset, playFinish, playComplete } from '@/lib/sounds'
 import { auth } from '@/lib/firebase'
@@ -181,7 +181,7 @@ export default function LabPage() {
   const islandId = params.islandId as string
   const lang = useLanguage()
 
-  const [island, setIsland] = useState<any>(null)
+  const [island, setIsland] = useState<SubIsland | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [resetKey, setResetKey] = useState(0)

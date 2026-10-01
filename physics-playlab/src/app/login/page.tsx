@@ -24,6 +24,14 @@ const ERROR_CODES: Record<string, string> = {
   'auth/invalid-credential': 'auth.error.invalidCredential',
 }
 
+function getAuthErrorKey(error: unknown): string {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    const code = (error as { code?: unknown }).code
+    if (typeof code === 'string') return ERROR_CODES[code] || 'auth.error.generic'
+  }
+  return 'auth.error.generic'
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const lang = useLanguage()
@@ -88,10 +96,9 @@ export default function LoginPage() {
       }
       playComplete()
       setShowAnim(true)
-    } catch (err: any) {
+    } catch (err: unknown) {
       justAuthedRef.current = false
-      const errorKey = ERROR_CODES[err.code] || 'auth.error.generic'
-      setError(t(errorKey, AUTH, lang))
+      setError(t(getAuthErrorKey(err), AUTH, lang))
       setIsLoading(false)
     }
   }
@@ -113,10 +120,9 @@ export default function LoginPage() {
       setAnimName(name)
       playComplete()
       setShowAnim(true)
-    } catch (err: any) {
+    } catch (err: unknown) {
       justAuthedRef.current = false
-      const errorKey = ERROR_CODES[err.code] || 'auth.error.generic'
-      setError(t(errorKey, AUTH, lang))
+      setError(t(getAuthErrorKey(err), AUTH, lang))
       setIsLoading(false)
     }
   }

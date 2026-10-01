@@ -1,7 +1,14 @@
 let _ctx: AudioContext | null = null
 
+const createAudioContext = (): AudioContext => {
+  const AudioContextConstructor = window.AudioContext
+    ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+  if (!AudioContextConstructor) throw new Error('AudioContext is not supported')
+  return new AudioContextConstructor()
+}
+
 const ac = (): AudioContext => {
-  if (!_ctx) _ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  if (!_ctx) _ctx = createAudioContext()
   if (_ctx.state === 'suspended') _ctx.resume()
   return _ctx
 }

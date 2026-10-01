@@ -182,7 +182,7 @@ export default function LabCanvas({
       const w = size * (img.naturalWidth / img.naturalHeight)
       const floatY = pose === 'idle' ? Math.sin(Date.now() / 200) * 3 : 0
       c.imageSmoothingEnabled = true
-      ;(c as any).imageSmoothingQuality = 'high'
+      c.imageSmoothingQuality = 'high'
       c.drawImage(source, feetX - w / 2, feetY - size + floatY, w, size)
     }
 
@@ -324,7 +324,7 @@ export default function LabCanvas({
 
         const seaY = 370
         let currentH = height + u * t - 0.5 * GRAVITY * t * t
-        let vy = u - GRAVITY * t
+        const vy = u - GRAVITY * t
         let currentY = seaY - currentH * 4.4
 
         if (currentH <= 0) {
@@ -394,7 +394,7 @@ export default function LabCanvas({
         const vy = vy0 - GRAVITY * t
         const scale = 4.8
 
-        let cx = pivotX + sX * scale
+        const cx = pivotX + sX * scale
         let cy = pivotY - sY * scale
 
         if (cy >= 340) {
@@ -601,7 +601,7 @@ export default function LabCanvas({
         const a1 = -force / mass, a2 = force / mass2
         const s1 = 0.5 * a1 * t * t, s2 = 0.5 * a2 * t * t
         const v1 = a1 * t, v2 = a2 * t
-        let x1 = 400 + s1 * 8, x2 = 400 + s2 * 8
+        const x1 = 400 + s1 * 8, x2 = 400 + s2 * 8
 
         if (x1 <= 60 || x2 >= W - 60) finish()
 

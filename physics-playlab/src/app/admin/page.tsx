@@ -10,7 +10,7 @@ type UserRow = {
   uid: string
   email: string
   displayName: string
-  updatedAt?: any
+  updatedAt?: unknown
   islandProgress?: Record<string, { learnDone: boolean; labDone: boolean; quizScore: number; flagPlanted: boolean }>
 }
 
